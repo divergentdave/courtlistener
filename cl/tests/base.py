@@ -46,6 +46,10 @@ class BaseSeleniumTest(StaticLiveServerTestCase):
 
     @staticmethod
     def _create_browser():
+        return BaseSeleniumTest._create_browser_firefox()
+
+    @staticmethod
+    def _create_browser_chrome():
         options = webdriver.ChromeOptions()
         if settings.SELENIUM_HEADLESS is True:
             options.add_argument('headless')
@@ -57,6 +61,20 @@ class BaseSeleniumTest(StaticLiveServerTestCase):
             return webdriver.Remote(settings.DOCKER_SELENIUM_HOST,
                                     desired_capabilities=capabilities)
         return webdriver.Chrome(chrome_options=options)
+
+    @staticmethod
+    def _create_browser_firefox():
+        options = webdriver.firefox.options.Options()
+        if settings.SELENIUM_HEADLESS is True:
+            options.add_argument('-headless')
+
+        if settings.DOCKER_SELENIUM_HOST:
+            capabilities = {
+                'browserName': 'firefox',
+            }
+            return webdriver.Remote(settings.DOCKER_SELENIUM_HOST,
+                                    desired_capabilities=capabilities)
+        return webdriver.Firefox(firefox_options=options)
 
     @classmethod
     def setUpClass(cls):
