@@ -18,7 +18,6 @@ from selenium.webdriver.support.expected_conditions import staleness_of
 from timeout_decorator import TimeoutError
 
 from cl.audio.models import Audio
-from cl.lib.decorators import retry
 from cl.search.models import Opinion
 from cl.search.tasks import add_items_to_solr
 
@@ -92,7 +91,6 @@ class BaseSeleniumTest(StaticLiveServerTestCase):
         self.browser.quit()
         self._teardown_test_solr()
 
-    @retry(AssertionError, tries=3, delay=0.25, backoff=1)
     def assert_text_in_node(self, text, tag_name):
         """Is the text in a given node?
 
@@ -104,7 +102,6 @@ class BaseSeleniumTest(StaticLiveServerTestCase):
         node = self.browser.find_element_by_tag_name(tag_name)
         self.assertIn(text, node.text)
 
-    @retry(AssertionError, tries=3, delay=0.25, backoff=1)
     def assert_text_not_in_node(self, text, tag_name):
         """Assert that text is not in a node by name
 
@@ -116,7 +113,6 @@ class BaseSeleniumTest(StaticLiveServerTestCase):
         node = self.browser.find_element_by_tag_name(tag_name)
         self.assertNotIn(text, node.text)
 
-    @retry(AssertionError, tries=3, delay=0.25, backoff=1)
     def assert_text_in_node_by_id(self, text, tag_id):
         """Is the text in a node selected by ID?
 
@@ -128,7 +124,6 @@ class BaseSeleniumTest(StaticLiveServerTestCase):
         node = self.browser.find_element_by_id(tag_id)
         self.assertIn(text, node.text)
 
-    @retry(NoSuchElementException, tries=3, delay=0.25, backoff=1)
     def find_element_by_id(self, node, id_):
         """Find an element by its ID.
 
@@ -148,7 +143,6 @@ class BaseSeleniumTest(StaticLiveServerTestCase):
         yield
         WebDriverWait(self.browser, timeout).until(staleness_of(old_page))
 
-    @retry(TimeoutError, tries=3, delay=0.25, backoff=1)
     def click_link_for_new_page(self, link_text, timeout=SELENIUM_TIMEOUT):
         with self.wait_for_page_load(timeout=timeout):
             self.browser.find_element_by_link_text(link_text).click()
