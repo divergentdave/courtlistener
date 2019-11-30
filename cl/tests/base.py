@@ -84,8 +84,6 @@ class BaseSeleniumTest(StaticLiveServerTestCase):
         finally:
             self.browser = self._create_browser()
 
-        self.browser.implicitly_wait(5)
-
     def tearDown(self):
         if self.screenshot:
             filename = type(self).__name__ + '-selenium.png'
