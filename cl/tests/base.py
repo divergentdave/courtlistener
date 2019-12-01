@@ -50,7 +50,7 @@ class BaseSeleniumTest(StaticLiveServerTestCase):
 
     @staticmethod
     def _create_browser():
-        return BaseSeleniumTest._create_browser_firefox()
+        return BaseSeleniumTest._create_browser_chrome()
 
     @staticmethod
     def _create_browser_chrome():
