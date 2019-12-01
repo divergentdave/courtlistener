@@ -1,8 +1,7 @@
-import time
-
 from django.urls import reverse
 from django.test import Client, TestCase
 from timeout_decorator import timeout_decorator
+from selenium.webdriver.support.ui import WebDriverWait
 
 from cl.favorites.models import Favorite
 from cl.tests.base import BaseSeleniumTest, SELENIUM_TIMEOUT
@@ -72,7 +71,8 @@ class UserFavoritesTest(BaseSeleniumTest):
         self.browser.get(self.live_server_url)
         search_box = self.browser.find_element_by_id('id_q')
         search_box.send_keys('lissner')
-        search_box.submit()
+        with self.wait_for_page_load():
+            search_box.submit()
 
         # She looks over the results and sees one in particular possibly of
         # interest so she clicks on the title
@@ -81,7 +81,8 @@ class UserFavoritesTest(BaseSeleniumTest):
 
         title_anchor = articles[0].find_elements_by_tag_name('a')[0]
         self.assertNotEqual(title_anchor.text.strip(), '')
-        title_anchor.click()
+        with self.wait_for_page_load():
+            title_anchor.click()
 
         # On the detail page she now sees it might be useful later, so she
         # clicks on the little star next to the result result title
@@ -95,8 +96,10 @@ class UserFavoritesTest(BaseSeleniumTest):
 
         # Oops! She's not signed in and she sees a prompt telling her as such
         link = self.browser.find_element_by_css_selector('#modal-logged-out a')
+        self.wait_for_visibility(link)
         self.assertIn('Sign In', link.text)
-        link.click()
+        with self.wait_for_page_load():
+            link.click()
 
         # Clicking it brings her to the sign in page
         self.assert_text_in_node('Sign in', 'body')
@@ -106,7 +109,8 @@ class UserFavoritesTest(BaseSeleniumTest):
         # She logs in
         self.browser.find_element_by_id('username').send_keys('pandora')
         self.browser.find_element_by_id('password').send_keys('password')
-        self.browser.find_element_by_id('password').submit()
+        with self.wait_for_page_load():
+            self.browser.find_element_by_id('password').submit()
 
         # And is brought back to that item!
         self.assert_text_in_node(title.strip(), 'body')
@@ -115,7 +119,8 @@ class UserFavoritesTest(BaseSeleniumTest):
         star = self.browser.find_element_by_id('favorites-star')
         star.click()
 
-        self.browser.find_element_by_id('modal-save-favorite')
+        favorite_modal = self.browser.find_element_by_id('modal-save-favorite')
+        self.wait_for_visibility(favorite_modal)
         modal_title = self.browser.find_element_by_id('save-favorite-title')
         self.assertIn('Save Favorite', modal_title.text)
 
@@ -130,7 +135,8 @@ class UserFavoritesTest(BaseSeleniumTest):
 
         search_box = self.browser.find_element_by_id('id_q')
         search_box.send_keys('lissner')
-        search_box.submit()
+        with self.wait_for_page_load():
+            search_box.submit()
 
         # Drilling into the result she's interested brings her to the details
         # TODO: Candidate for refactor
@@ -138,7 +144,22 @@ class UserFavoritesTest(BaseSeleniumTest):
         title_anchor = articles[0].find_elements_by_tag_name('a')[0]
         search_title = title_anchor.text.strip()
         self.assertNotEqual(search_title, '')
-        title_anchor.click()
+        with self.wait_for_page_load():
+            title_anchor.click()
+        # Wait further for JS to finish, and event handlers to be registered
+        WebDriverWait(self.browser, SELENIUM_TIMEOUT).until(
+            lambda browser: browser.execute_script(
+                'return $._data(document, "events").click.filter('
+                'obj => obj.namespace == "bs.data-api.modal"'
+                ').length'
+            )
+        )
+        WebDriverWait(self.browser, SELENIUM_TIMEOUT).until(
+            lambda browser: browser.execute_script(
+                'return $._data(document.getElementById("saveFavorite"), '
+                '"events").click.length'
+            )
+        )
 
         # She has used CL before and knows to click the star to favorite it
         star = self.browser.find_element_by_id('favorites-star')
@@ -155,6 +176,7 @@ class UserFavoritesTest(BaseSeleniumTest):
         # empty notes field for her to add whatever she wants. She adds a note
         # to help her remember what was interesting about this result.
         title = self.browser.find_element_by_id('save-favorite-title')
+        self.wait_for_visibility(title)
         self.assertIn('Save Favorite', title.text.strip())
 
         name_field = self.browser.find_element_by_id('save-favorite-name-field')
@@ -165,9 +187,9 @@ class UserFavoritesTest(BaseSeleniumTest):
 
         # She clicks 'Save'
         self.browser.find_element_by_id('saveFavorite').click()
+        self.wait_for_invisibility(title)
 
         # She now sees the star is full on yellow implying it's a fave!
-        time.sleep(1)  # Selenium is sometimes faster than JS.
         star = self.browser.find_element_by_id('favorites-star')
         self.assertIn('gold', star.get_attribute('class'))
         self.assertNotIn('gray', star.get_attribute('class'))
@@ -192,7 +214,7 @@ class UserFavoritesTest(BaseSeleniumTest):
         self.assertIsNone(dropdown_menu.get_attribute('display'))
 
         profile_dropdown.click()
-        time.sleep(1)
+        self.wait_for_visibility(dropdown_menu)
         self.click_link_for_new_page('Favorites')
 
         # The case is right there with the same name and notes she gave it!
@@ -201,10 +223,8 @@ class UserFavoritesTest(BaseSeleniumTest):
         self.assertIn('Favorites', self.browser.title)
         table = self.browser.find_element_by_css_selector('.settings-table')
         table_header = table.find_element_by_tag_name('thead')
-        [
+        for heading in ('Name', 'Notes'):
             self.assertIn(heading, table_header.text)
-            for heading in ('Name', 'Notes')
-            ]
 
         already_found = False
         for tr in table.find_elements_by_tag_name('tr'):
@@ -240,9 +260,18 @@ class UserFavoritesTest(BaseSeleniumTest):
         self.assertIsNone(dropdown_menu.get_attribute('display'))
 
         profile_dropdown.click()
+        self.wait_for_visibility(dropdown_menu)
 
         favorites = self.browser.find_element_by_link_text('Favorites')
-        favorites.click()
+        with self.wait_for_page_load():
+            favorites.click()
+        WebDriverWait(self.browser, SELENIUM_TIMEOUT).until(
+            lambda browser: browser.execute_script(
+                'return $._data('
+                'document.querySelector(".edit-favorite-trigger"), '
+                '"events").click.length'
+            )
+        )
 
         # She sees an edit link next to one of them and clicks it
         self.assertIn('Favorites', self.browser.title)
@@ -252,9 +281,10 @@ class UserFavoritesTest(BaseSeleniumTest):
 
         # Greeted with an "Edit This Favorite" dialog, she fixes a typo in
         # the name and notes fields
+        modal = self.find_element_by_id(self.browser, 'modal-save-favorite')
+        self.wait_for_visibility(modal)
         self.assert_text_in_node_by_id(
             'Edit This Favorite', 'modal-save-favorite')
-        modal = self.find_element_by_id(self.browser, 'modal-save-favorite')
         name = self.find_element_by_id(modal, 'save-favorite-name-field')
         notes = self.find_element_by_id(modal, 'save-favorite-notes-field')
         # -- via favorites.json[pk=1]
@@ -273,9 +303,9 @@ class UserFavoritesTest(BaseSeleniumTest):
         button = modal.find_element_by_id('saveFavorite')
         self.assertIn('Save', button.text)
         button.click()
+        self.wait_for_invisibility(modal)
 
         # And notices the change on the page immediately
-        time.sleep(0.5)  # Selenium is too fast.
         self.assertIn('Favorites', self.browser.title)
         self.assert_text_in_node('Renamed Favorite', 'body')
         self.assert_text_in_node('Modified Notes', 'body')
