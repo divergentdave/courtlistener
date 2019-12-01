@@ -3,6 +3,7 @@ import time
 from django.urls import reverse
 from django.test import Client, TestCase
 from timeout_decorator import timeout_decorator
+from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 
 from cl.favorites.models import Favorite
@@ -279,6 +280,7 @@ class UserFavoritesTest(BaseSeleniumTest):
         self.assertIn('Favorites', self.browser.title)
         self.assert_text_in_node('Totes my Notes 2', 'body')  # in favorites.json
         edit_link = self.browser.find_element_by_link_text('Edit / Delete')
+        print 'onclick:', edit_link.find_element(By.XPATH, './parent::div').get_attribute('onclick')
         edit_link.click()
         time.sleep(1)
         for entry in self.browser.get_log('browser'):
