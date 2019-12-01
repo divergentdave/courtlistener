@@ -283,9 +283,10 @@ class UserFavoritesTest(BaseSeleniumTest):
         print 'onclick:', edit_link.find_element(By.XPATH, './parent::div').get_attribute('onclick')
         edit_link.click()
         time.sleep(1)
-        for entry in self.browser.get_log('browser'):
+        log_entries = self.browser.get_log('browser')
+        for entry in log_entries:
             print 'console.log message:', entry['message']
-        else:
+        if not log_entries:
             print 'no console.log messages'
 
         # Greeted with an "Edit This Favorite" dialog, she fixes a typo in
