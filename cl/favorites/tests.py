@@ -1,3 +1,5 @@
+import time
+
 from django.urls import reverse
 from django.test import Client, TestCase
 from timeout_decorator import timeout_decorator
@@ -278,6 +280,11 @@ class UserFavoritesTest(BaseSeleniumTest):
         self.assert_text_in_node('Totes my Notes 2', 'body')  # in favorites.json
         edit_link = self.browser.find_element_by_link_text('Edit / Delete')
         edit_link.click()
+        time.sleep(1)
+        for entry in self.browser.get_log('browser'):
+            print 'console.log message:', entry['message']
+        else:
+            print 'no console.log messages'
 
         # Greeted with an "Edit This Favorite" dialog, she fixes a typo in
         # the name and notes fields
