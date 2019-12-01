@@ -14,11 +14,6 @@ from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support.expected_conditions import (
-    invisibility_of_element,
-    staleness_of,
-    visibility_of,
-)
 from timeout_decorator import TimeoutError
 
 from cl.audio.models import Audio
@@ -166,18 +161,18 @@ class BaseSeleniumTest(StaticLiveServerTestCase):
     def wait_for_page_load(self, timeout=SELENIUM_TIMEOUT):
         old_page = self.browser.find_element_by_tag_name('html')
         yield
-        WebDriverWait(self.browser, timeout).until(staleness_of(old_page))
+        WebDriverWait(self.browser, timeout).until(EC.staleness_of(old_page))
 
     def click_link_for_new_page(self, link_text, timeout=SELENIUM_TIMEOUT):
         with self.wait_for_page_load(timeout=timeout):
             self.browser.find_element_by_link_text(link_text).click()
 
     def wait_for_visibility(self, element, timeout=SELENIUM_TIMEOUT):
-        WebDriverWait(self.browser, timeout).until(visibility_of(element))
+        WebDriverWait(self.browser, timeout).until(EC.visibility_of(element))
 
     def wait_for_invisibility(self, element, timeout=SELENIUM_TIMEOUT):
         WebDriverWait(self.browser, timeout).until(
-            invisibility_of_element(element)
+            EC.invisibility_of_element(element)
         )
 
     def attempt_sign_in(self, username, password):
