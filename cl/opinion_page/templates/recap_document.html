@@ -45,7 +45,8 @@
                 <h3 class="inline"><span>Your Notes</span></h3>
 
                 <p class="inline" data-toggle="modal"
-                   data-target="#modal-save-favorite">
+                   data-target="#modal-save-favorite"
+                   onclick="console.log('onclick on edit')">
                     (<a href="#favorite-editor">edit</a>)
                     <i class="fa fa-pencil gray pointer"></i>
                 </p>
@@ -68,6 +69,7 @@
          class="{% if favorite_form.instance.recap_doc_id %}gold fa-star{% else %}gray fa-star-o bold{% endif %} pointer fa inline"
          data-toggle="modal"
          data-target="#modal-save-favorite, #modal-logged-out"
+         onclick="console.log('onclick on edit')"
          title="{% if favorite_form.instance.recap_doc_id %}Edit this favorite{% else %}Save this as a favorite in your profile{% endif %}"></i>
       <h2 class="inline"><a
               href="{{ document.docket_entry.docket.get_absolute_url }}"

@@ -65,7 +65,7 @@
         <div class="{% if not favorite_form.instance.cluster_id %}hidden{% endif %} sidebar-section" id="sidebar-notes">
             <div>
                 <h3 class="inline"><span>Your Notes</span></h3>
-                <p class="inline" data-toggle="modal" data-target="#modal-save-favorite">
+                <p class="inline" data-toggle="modal" data-target="#modal-save-favorite" onclick="console.log('onclick on favorite star')">
                     (<a href="#favorite-editor">edit</a>)
                      <i class="fa fa-pencil gray pointer"></i>
                 </p>
@@ -161,6 +161,7 @@
                class="{% if favorite_form.instance.cluster_id %}gold fa-star{% else %}gray fa-star-o bold{% endif %} pointer fa inline"
                data-toggle="modal"
                data-target="#modal-save-favorite, #modal-logged-out"
+               onclick="console.log('onclick on favorite star')"
                title="Save this record as a favorite in your profile"></i>
             <h2 class="inline">{{ cluster.caption|safe|v_wrapper }}</h2>
             {% include "includes/favorites_modal.html" %}
