@@ -11,7 +11,6 @@
     <script type="text/javascript">
         $(document).ready(function(){
             $(".edit-favorite-trigger").click(function (event) {
-                console.log("in jQuery edit favorite click handler");
                 event.preventDefault();
                 var pk = $(this).data("id");
                 var ds = $("#data-store-" + pk);
@@ -72,8 +71,7 @@
                 </td>
                 <td class="align-top">
                   <div data-toggle="modal"
-                       data-target="#modal-save-favorite"
-                       onclick="console.log('onclick on edit favorite')">
+                       data-target="#modal-save-favorite">
                     <a class="inline edit-favorite-trigger nowrap cursor"
                        data-id="{{ favorite_form.instance.id }}">Edit / Delete
                       <i class="fa fa-pencil gray"></i>
