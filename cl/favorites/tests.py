@@ -1,7 +1,6 @@
 from django.urls import reverse
 from django.test import Client, TestCase
 from timeout_decorator import timeout_decorator
-from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 
 from cl.favorites.models import Favorite
