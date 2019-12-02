@@ -57,8 +57,6 @@ class BaseSeleniumTest(StaticLiveServerTestCase):
 
         if settings.DOCKER_SELENIUM_HOST:
             capabilities = options.to_capabilities()
-            capabilities['loggingPrefs'] = {'browser': 'INFO'}
-            capabilities['goog:loggingPrefs'] = {'browser': 'INFO'}
             return webdriver.Remote(settings.DOCKER_SELENIUM_HOST,
                                     desired_capabilities=capabilities)
         return webdriver.Chrome(chrome_options=options)
@@ -73,7 +71,6 @@ class BaseSeleniumTest(StaticLiveServerTestCase):
             capabilities = {
                 'browserName': 'firefox',
             }
-            capabilities['loggingPrefs'] = {'browser': 'INFO'}
             return webdriver.Remote(settings.DOCKER_SELENIUM_HOST,
                                     desired_capabilities=capabilities)
         return webdriver.Firefox(firefox_options=options)
