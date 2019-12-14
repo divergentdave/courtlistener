@@ -52,6 +52,7 @@ class BaseSeleniumTest(StaticLiveServerTestCase):
             options.add_argument('headless')
         options.add_argument("silent")
         options.add_experimental_option('w3c', False)
+        options.add_argument("--disable-features=AvoidFlashBetweenNavigation,PaintHolding")
 
         if settings.DOCKER_SELENIUM_HOST:
             capabilities = options.to_capabilities()
