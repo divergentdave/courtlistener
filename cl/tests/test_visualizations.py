@@ -53,6 +53,7 @@ class VisualizationCrudTests(BaseSeleniumTest):
 
         type_ahead = self.browser.find_element_by_css_selector('.tt-dataset-0')
         first_case.send_keys('Marsh')
+        self.wait_for_visibility(type_ahead)
         suggestion = type_ahead.find_element_by_css_selector('.tt-suggestion')
         # She notices a drop down from the type-ahead search!
         suggestion_text = suggestion.text
@@ -74,6 +75,7 @@ class VisualizationCrudTests(BaseSeleniumTest):
         )
         type_ahead = self.browser.find_element_by_css_selector('.tt-dataset-1')
         second_case.send_keys('Cutter')
+        self.wait_for_visibility(type_ahead)
         suggestion = type_ahead.find_element_by_css_selector('.tt-suggestion')
 
         # In the new type-ahead, selects the Jon B. Cutter case
