@@ -152,7 +152,8 @@ class AudioBlockedFromSearchEnginesTest(BaseSeleniumTest):
         # She lands on the advanced search screen for OA, and does a wildcard
         # search.
         searchbox = self.browser.find_element_by_id('id_q')
-        searchbox.submit()
+        with self.wait_for_page_load():
+            searchbox.submit()
 
         # The SERP updates and she selects the one she knows is blocked
         blocked_argument = self.browser.find_element_by_link_text(
@@ -177,7 +178,8 @@ class AudioBlockedFromSearchEnginesTest(BaseSeleniumTest):
         # She lands on the advanced search screen for OA, and does a wildcard
         # search.
         searchbox = self.browser.find_element_by_id('id_q')
-        searchbox.submit()
+        with self.wait_for_page_load():
+            searchbox.submit()
 
         # The SERP updates and she selects the one she knows is blocked
         self.click_link_for_new_page('Blocked Oral Argument (Test 2015)')
@@ -199,7 +201,8 @@ class AudioBlockedFromSearchEnginesTest(BaseSeleniumTest):
         # She lands on the advanced search screen for OA, and does a wildcard
         # search.
         searchbox = self.browser.find_element_by_id('id_q')
-        searchbox.submit()
+        with self.wait_for_page_load():
+            searchbox.submit()
 
         # The SERP updates and she selects the one she knows is blocked
         blocked_argument = self.browser.find_element_by_link_text(
